@@ -12,7 +12,10 @@ let _rpcId = 1
 async function mcpPost(body) {
   const res = await fetch('/mcp', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json, text/event-stream',
+    },
     body: JSON.stringify(body),
   })
   if (!res.ok) throw new Error(`MCP server returned ${res.status}. Is it running on :3000?`)
@@ -156,7 +159,7 @@ async function callAgent(messages, signal) {
   if (lower === 'tools') {
     checkAbort()
     const tools = await mcpListTools()
-    if (!tools.length) return '❌ MCP server returned no tools. Make sure it is running:\n```\ncd mcp-server && npm run dev\n```'
+    if (!tools.length) return 'MCP server returned no tools. Make sure it is running:\n```\ncd mcp-server && npm run dev\n```'
     return `## MCP Tools (${tools.length})\n\n` +
       tools.map(t => `**\`${t.name}\`**\n> ${t.description}`).join('\n\n')
   }
@@ -408,7 +411,7 @@ export default function ChatWindow({ chat, suggestions, updateChat, onToggleSide
       updateChat(chatId, c => ({ ...c, messages: [...c.messages, assistantMsg] }))
     } catch (e) {
       if (e.name !== 'AbortError') {
-        const errMsg = { id: Math.random().toString(36).slice(2), role: 'assistant', content: 'Something went wrong connecting to the agent. Please try again.', ts: Date.now(), isError: true }
+        const errMsg = { id: Math.random().toString(36).slice(2), role: 'assistant', content: `**Error:** ${e.message}`, ts: Date.now(), isError: true }
         updateChat(chatId, c => ({ ...c, messages: [...c.messages, errMsg] }))
       }
     } finally {

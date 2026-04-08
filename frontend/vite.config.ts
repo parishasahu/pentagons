@@ -6,9 +6,18 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/mcp': 'http://localhost:3000',
-      '/trace': 'http://localhost:3000',
-      '/api': 'http://localhost:8000',
+      '/mcp': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
+      '/trace': {
+        target: 'http://127.0.0.1:3000',
+        changeOrigin: true,
+      },
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
     },
   },
 })
