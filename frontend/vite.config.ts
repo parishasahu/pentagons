@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       '/mcp': 'http://localhost:3000',
       '/trace': 'http://localhost:3000',
+      '/api': 'http://localhost:8000',
     },
   },
 })
