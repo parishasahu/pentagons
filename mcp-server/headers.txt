@@ -1,0 +1,10 @@
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Access-Control-Allow-Origin: *
+cache-control: no-cache
+connection: keep-alive
+content-type: text/event-stream
+mcp-session-id: 57d285f1-1406-4377-bc92-365a18fa0e7f
+content-length: 190
+Date: Wed, 08 Apr 2026 16:15:21 GMT
+

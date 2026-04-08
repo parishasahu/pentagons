@@ -1,0 +1,3 @@
+event: message
+data: {"result":{"content":[{"type":"text","text":"{\n  \"schemeId\": \"scheme-abc\",\n  \"eligible\": false,\n  \"reason\": \"Scheme not found\",\n  \"failedRules\": [\n    \"scheme_not_found\"\n  ]\n}"}]},"jsonrpc":"2.0","id":3}
+

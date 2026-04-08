@@ -1,0 +1,26 @@
+{
+  "name": "anyverse-mcp-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Anyverse MCP Server — scheme discovery & document bundling for students",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "inspector": "npx @modelcontextprotocol/inspector http://localhost:3000/mcp"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.5",
+    "tsx": "^4.19.0",
+    "typescript": "^5.3.3"
+  }
+}

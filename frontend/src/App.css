@@ -1,0 +1,16 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.main-area {
+  flex: 1;
+  min-width: 0;
+  transition: margin-left 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}

@@ -1,0 +1,289 @@
+[
+    {
+        "id": "NSP_SC_PRE_MATRIC",
+        "name": "NSP Pre-Matric Scholarship for SC Students",
+        "type": "Scholarship",
+        "ministry": "Ministry of Social Justice & Empowerment",
+        "amount": "₹1,000 – ₹3,500 / year",
+        "description": "Pre-matric scholarship for Scheduled Caste students studying in Classes 9 and 10.",
+        "rules": {
+            "maxIncome": 250000,
+            "categories": ["SC"],
+            "courseLevels": ["10th"]
+        }
+    },
+    {
+        "id": "NSP_SC_POST_MATRIC",
+        "name": "NSP Post-Matric Scholarship for SC Students",
+        "type": "Scholarship",
+        "ministry": "Ministry of Social Justice & Empowerment",
+        "amount": "₹2,000 – ₹20,000 / year",
+        "description": "Post-matric scholarship covering tuition, maintenance, and other charges for SC students pursuing higher education.",
+        "rules": {
+            "maxIncome": 250000,
+            "categories": ["SC"],
+            "courseLevels": ["12th", "UG", "PG", "PhD"]
+        }
+    },
+    {
+        "id": "NSP_OBC_POST_MATRIC",
+        "name": "NSP Post-Matric Scholarship for OBC Students",
+        "type": "Scholarship",
+        "ministry": "Ministry of Social Justice & Empowerment",
+        "amount": "₹1,500 – ₹10,000 / year",
+        "description": "Post-matric scholarship for Other Backward Class students who have passed class 10.",
+        "rules": {
+            "maxIncome": 100000,
+            "categories": ["OBC"],
+            "courseLevels": ["12th", "UG", "PG"]
+        }
+    },
+    {
+        "id": "NSP_ST_POST_MATRIC",
+        "name": "NSP Post-Matric Scholarship for ST Students",
+        "type": "Scholarship",
+        "ministry": "Ministry of Tribal Affairs",
+        "amount": "₹1,200 – ₹15,000 / year",
+        "description": "For Scheduled Tribe students pursuing post-matric studies, covering tuition and maintenance.",
+        "rules": {
+            "maxIncome": 250000,
+            "categories": ["ST"],
+            "courseLevels": ["12th", "UG", "PG", "PhD"]
+        }
+    },
+    {
+        "id": "PM_YASASVI",
+        "name": "PM YASASVI Scholarship",
+        "type": "Scholarship",
+        "ministry": "Ministry of Social Justice & Empowerment",
+        "amount": "₹75,000 – ₹1,25,000 / year",
+        "description": "PM Young Achievers Scholarship Award Scheme for Vibrant India — for top OBC/EWS students.",
+        "rules": {
+            "maxIncome": 250000,
+            "categories": ["OBC", "EWS"],
+            "courseLevels": ["12th", "UG"],
+            "minPercentage": 60
+        }
+    },
+    {
+        "id": "MOMA_MINORITY",
+        "name": "Pre-Matric Scholarship for Minority Communities",
+        "type": "Scholarship",
+        "ministry": "Ministry of Minority Affairs",
+        "amount": "₹500 – ₹1,000 / month",
+        "description": "Scholarship for students from minority communities (Muslim, Christian, Sikh, Buddhist, Parsi, Jain) studying in Classes 1 to 10.",
+        "rules": {
+            "maxIncome": 100000,
+            "courseLevels": ["10th"]
+        }
+    },
+    {
+        "id": "MOMA_POST_MATRIC",
+        "name": "Post-Matric Scholarship for Minority Communities",
+        "type": "Scholarship",
+        "ministry": "Ministry of Minority Affairs",
+        "amount": "₹600 – ₹1,200 / month",
+        "description": "For minority community students pursuing education beyond Class 10 at recognised institutions.",
+        "rules": {
+            "maxIncome": 200000,
+            "courseLevels": ["12th", "UG", "PG"]
+        }
+    },
+    {
+        "id": "BEGUM_HAZRAT_MAHAL",
+        "name": "Begum Hazrat Mahal National Scholarship",
+        "type": "Scholarship",
+        "ministry": "Maulana Azad Education Foundation",
+        "amount": "₹5,000 / year",
+        "description": "For meritorious girls from minority communities studying in Classes 9 to 12.",
+        "rules": {
+            "maxIncome": 200000,
+            "genderOnly": "female",
+            "minPercentage": 50,
+            "courseLevels": ["10th", "12th"]
+        }
+    },
+    {
+        "id": "INSPIRE_SHE",
+        "name": "INSPIRE Scholarship for Higher Education (SHE)",
+        "type": "Scholarship",
+        "ministry": "Department of Science & Technology",
+        "amount": "₹80,000 / year",
+        "description": "For students in the top 1% of Class 12 board exams pursuing BSc or integrated MSc in natural sciences.",
+        "rules": {
+            "minPercentage": 80,
+            "courseLevels": ["UG"]
+        }
+    },
+    {
+        "id": "AICTE_PRAGATI",
+        "name": "AICTE Pragati Scholarship for Girls",
+        "type": "Scholarship",
+        "ministry": "All India Council for Technical Education",
+        "amount": "₹50,000 / year",
+        "description": "For girl students pursuing technical courses (Degree or Diploma) from AICTE-approved institutions.",
+        "rules": {
+            "maxIncome": 800000,
+            "genderOnly": "female",
+            "courseLevels": ["UG"]
+        }
+    },
+    {
+        "id": "AICTE_SAKSHAM",
+        "name": "AICTE Saksham Scholarship for Specially Abled Students",
+        "type": "Scholarship",
+        "ministry": "All India Council for Technical Education",
+        "amount": "₹50,000 / year",
+        "description": "For differently-abled students pursuing technical education at AICTE-approved institutions.",
+        "rules": {
+            "maxIncome": 800000,
+            "pwdOnly": true,
+            "courseLevels": ["UG", "PG"]
+        }
+    },
+    {
+        "id": "NSP_PwD",
+        "name": "Scholarship for Top Class Education for Students with Disability",
+        "type": "Scholarship",
+        "ministry": "Department of Empowerment of Persons with Disabilities",
+        "amount": "₹2,00,000 / year (full tuition + allowances)",
+        "description": "Full scholarship for PwD students admitted to premier institutions for UG and PG programmes.",
+        "rules": {
+            "pwdOnly": true,
+            "courseLevels": ["UG", "PG", "PhD"]
+        }
+    },
+    {
+        "id": "ISHAN_UDAY",
+        "name": "Ishan Uday Scholarship for North-East Region",
+        "type": "Scholarship",
+        "ministry": "University Grants Commission (UGC)",
+        "amount": "₹5,400 – ₹7,800 / month",
+        "description": "For students originating from the North-East region pursuing UG and PG courses at recognised institutions.",
+        "rules": {
+            "maxIncome": 450000,
+            "states": ["Assam", "Meghalaya", "Manipur", "Mizoram", "Nagaland", "Tripura", "Arunachal Pradesh", "Sikkim"],
+            "courseLevels": ["UG", "PG"]
+        }
+    },
+    {
+        "id": "UGC_SINGLE_GIRL",
+        "name": "UGC PG Indira Gandhi Scholarship for Single Girl Child",
+        "type": "Scholarship",
+        "ministry": "University Grants Commission (UGC)",
+        "amount": "₹36,200 / year",
+        "description": "For single girl child (only child in family or one of twins/triplets) pursuing PG studies at UGC-recognised universities.",
+        "rules": {
+            "genderOnly": "female",
+            "courseLevels": ["PG"]
+        }
+    },
+    {
+        "id": "RAJASTHAN_MUKHYAMANTRI",
+        "name": "Mukhyamantri Ucch Shiksha Scholarship — Rajasthan",
+        "type": "State Scholarship",
+        "ministry": "Rajasthan Government — Higher Education Dept.",
+        "amount": "₹5,000 / year",
+        "description": "For Rajasthan-domicile students who have scored ≥60% in Class 12 and belong to economically weaker sections.",
+        "rules": {
+            "maxIncome": 250000,
+            "states": ["Rajasthan"],
+            "courseLevels": ["UG"],
+            "minPercentage": 60
+        }
+    },
+    {
+        "id": "MAH_EBC_FREESHIP",
+        "name": "Maharashtra EBC Freeship Scheme",
+        "type": "Fee Waiver",
+        "ministry": "Maharashtra Social Justice & Special Assistance Dept.",
+        "amount": "Full tuition fee waiver",
+        "description": "Complete tuition fee exemption for Economically Backward Class students from Maharashtra pursuing higher education.",
+        "rules": {
+            "maxIncome": 100000,
+            "states": ["Maharashtra"],
+            "courseLevels": ["UG", "PG"]
+        }
+    },
+    {
+        "id": "KA_VIDYASIRI",
+        "name": "Vidyasiri Scholarship — Karnataka",
+        "type": "State Scholarship",
+        "ministry": "Karnataka Backward Classes Welfare Dept.",
+        "amount": "₹10,000 – ₹20,000 / year",
+        "description": "For SC/ST/OBC students from Karnataka pursuing UG/PG technical and professional courses.",
+        "rules": {
+            "maxIncome": 200000,
+            "states": ["Karnataka"],
+            "categories": ["SC", "ST", "OBC"],
+            "courseLevels": ["UG", "PG"]
+        }
+    },
+    {
+        "id": "WB_SWAMI_VIVEKANANDA",
+        "name": "Swami Vivekananda Merit-cum-Means Scholarship — West Bengal",
+        "type": "State Scholarship",
+        "ministry": "West Bengal Government — Education Dept.",
+        "amount": "₹1,000 – ₹5,000 / month",
+        "description": "Merit-cum-means scholarship for West Bengal students in UG/PG programmes, covering all caste categories.",
+        "rules": {
+            "maxIncome": 250000,
+            "states": ["West Bengal"],
+            "courseLevels": ["UG", "PG"],
+            "minPercentage": 60
+        }
+    },
+    {
+        "id": "PM_USHA",
+        "name": "PM-USHA (Universities for Holistic Advancement) Scholarship",
+        "type": "Central Scholarship",
+        "ministry": "Ministry of Education",
+        "amount": "₹20,000 – ₹50,000 / year",
+        "description": "Scholarships under PM-USHA for meritorious students in state universities across India.",
+        "rules": {
+            "maxIncome": 450000,
+            "courseLevels": ["UG", "PG"],
+            "minPercentage": 60
+        }
+    },
+    {
+        "id": "CSSS_MERIT",
+        "name": "Central Sector Scheme of Scholarships (CSSS)",
+        "type": "Scholarship",
+        "ministry": "Ministry of Education",
+        "amount": "₹12,000 / year (UG) | ₹20,000 / year (PG)",
+        "description": "For meritorious students from families with annual income below ₹8 lakh who secured above 80th percentile in Class 12 board.",
+        "rules": {
+            "maxIncome": 800000,
+            "minPercentage": 80,
+            "courseLevels": ["UG", "PG"]
+        }
+    },
+    {
+        "id": "NMMSS",
+        "name": "National Means-cum-Merit Scholarship (NMMSS)",
+        "type": "Scholarship",
+        "ministry": "Ministry of Education",
+        "amount": "₹12,000 / year",
+        "description": "For meritorious students from economically weaker sections to arrest dropout at Class 8, continuing up to Class 12.",
+        "rules": {
+            "maxIncome": 150000,
+            "courseLevels": ["10th", "12th"]
+        }
+    },
+    {
+        "id": "DHENKANAL_TN_GIRLSCIENCE",
+        "name": "Tamil Nadu Science Scholar Award for Girls",
+        "type": "State Scholarship",
+        "ministry": "Tamil Nadu Science & Technology Dept.",
+        "amount": "₹8,000 / year",
+        "description": "For girl students from Tamil Nadu pursuing science streams at UG level with distinction in Class 12.",
+        "rules": {
+            "maxIncome": 300000,
+            "states": ["Tamil Nadu"],
+            "genderOnly": "female",
+            "courseLevels": ["UG"],
+            "minPercentage": 70
+        }
+    }
+]

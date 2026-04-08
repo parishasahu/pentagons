@@ -1,0 +1,42 @@
+[
+  {
+    "studentId": "priya_sharma",
+    "documents": [
+      { "name": "Aadhaar Card",               "url": "https://example.com/docs/priya/aadhaar.pdf" },
+      { "name": "Income Certificate",          "url": "https://example.com/docs/priya/income.pdf" },
+      { "name": "Marksheet (Last Exam)",       "url": "https://example.com/docs/priya/marksheet.pdf" },
+      { "name": "Bank Passbook",               "url": "https://example.com/docs/priya/passbook.pdf" },
+      { "name": "Community / Caste Certificate","url": "https://example.com/docs/priya/caste.pdf" }
+    ]
+  },
+  {
+    "studentId": "rahul_verma",
+    "documents": [
+      { "name": "Aadhaar Card",               "url": "https://example.com/docs/rahul/aadhaar.pdf" },
+      { "name": "Income Certificate",          "url": "https://example.com/docs/rahul/income.pdf" },
+      { "name": "Marksheet (Last Exam)",       "url": "https://example.com/docs/rahul/marksheet.pdf" },
+      { "name": "Passport Photo",              "url": "https://example.com/docs/rahul/photo.pdf" },
+      { "name": "Domicile Certificate",        "url": "https://example.com/docs/rahul/domicile.pdf" },
+      { "name": "Bank Passbook",               "url": "https://example.com/docs/rahul/passbook.pdf" }
+    ]
+  },
+  {
+    "studentId": "ananya_das",
+    "documents": [
+      { "name": "Aadhaar Card",               "url": "https://example.com/docs/ananya/aadhaar.pdf" },
+      { "name": "Income Certificate",          "url": "https://example.com/docs/ananya/income.pdf" },
+      { "name": "Marksheet (Last Exam)",       "url": "https://example.com/docs/ananya/marksheet.pdf" },
+      { "name": "Passport Photo",              "url": "https://example.com/docs/ananya/photo.pdf" },
+      { "name": "Bank Passbook",               "url": "https://example.com/docs/ananya/passbook.pdf" },
+      { "name": "Disability Certificate",      "url": "https://example.com/docs/ananya/disability.pdf" },
+      { "name": "Community / Caste Certificate","url": "https://example.com/docs/ananya/caste.pdf" }
+    ]
+  },
+  {
+    "studentId": "default",
+    "documents": [
+      { "name": "Aadhaar Card",               "url": "https://example.com/docs/default/aadhaar.pdf" },
+      { "name": "Income Certificate",          "url": "https://example.com/docs/default/income.pdf" }
+    ]
+  }
+]

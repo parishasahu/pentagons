@@ -1,0 +1,69 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* Light theme (default) */
+:root {
+  --bg: #ffffff;
+  --bg-sidebar: #f9f9f7;
+  --bg-hover: #f1f0ed;
+  --bg-input: #fafafa;
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.18);
+  --text-primary: #0a0a0a;
+  --text-secondary: #4b4b4b;
+  --text-muted: #9b9b9b;
+  --accent: #0a0a0a;
+  --user-bubble: #f0efeb;
+  --user-bubble-text: #0a0a0a;
+  --assistant-bubble: #ffffff;
+  --assistant-bubble-text: #0a0a0a;
+  --radius: 14px;
+  --sidebar-width: 240px;
+  --font: 'Geist', sans-serif;
+  --font-mono: 'Geist Mono', monospace;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg: #111110;
+  --bg-sidebar: #161614;
+  --bg-hover: #1e1e1b;
+  --bg-input: #1a1a18;
+  --border: rgba(255,255,255,0.08);
+  --border-strong: rgba(255,255,255,0.15);
+  --text-primary: #f0ede8;
+  --text-secondary: #a8a49e;
+  --text-muted: #5c5a55;
+  --accent: #f0ede8;
+  --user-bubble: #1e1e1b;
+  --user-bubble-text: #f0ede8;
+  --assistant-bubble: #161614;
+  --assistant-bubble-text: #f0ede8;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

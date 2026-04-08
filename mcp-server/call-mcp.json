@@ -1,0 +1,40 @@
+[
+  {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+      "protocolVersion": "2024-11-05",
+      "capabilities": {},
+      "clientInfo": {
+        "name": "test-client",
+        "version": "1.0.0"
+      }
+    }
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "notifications/initialized"
+  },
+  {
+    "jsonrpc": "2.0",
+    "id": 3,
+    "method": "tools/call",
+    "params": {
+      "name": "check_eligibility",
+      "arguments": {
+        "schemeId": "test-scheme",
+        "profile": {
+          "state": "CA",
+          "category": "UR",
+          "annualIncome": 100000,
+          "courseLevel": "UG",
+          "percentage": 90,
+          "gender": "male",
+          "disability": false
+        }
+      }
+    }
+  }
+]
