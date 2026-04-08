@@ -3,35 +3,304 @@ import MessageBubble from './MessageBubble.jsx'
 import TypingIndicator from './TypingIndicator.jsx'
 import './ChatWindow.css'
 
-// Mock MCP agent response
+
+// ─── MCP helpers ──────────────────────────────────────────────────────────────
+
+let _mcpReady = false
+let _rpcId = 1
+
+async function mcpPost(body) {
+  const res = await fetch('/mcp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error(`MCP server returned ${res.status}. Is it running on :3000?`)
+  const text = await res.text()
+  if (!text.trim()) return null          // notifications return empty body
+  const json = JSON.parse(text)
+  if (json.error) throw new Error(`MCP error: ${json.error.message}`)
+  return json.result
+}
+
+async function ensureMCPReady() {
+  if (_mcpReady) return
+  await mcpPost({
+    jsonrpc: '2.0', id: _rpcId++, method: 'initialize',
+    params: {
+      protocolVersion: '2024-11-05',
+      capabilities: {},
+      clientInfo: { name: 'anyverse-frontend', version: '1.0.0' },
+    },
+  })
+  // Fire-and-forget notification (no id, no response expected)
+  fetch('/mcp', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ jsonrpc: '2.0', method: 'notifications/initialized' }),
+  }).catch(() => {})
+  _mcpReady = true
+}
+
+async function mcpCallTool(name, args = {}) {
+  await ensureMCPReady()
+  const result = await mcpPost({
+    jsonrpc: '2.0', id: _rpcId++, method: 'tools/call',
+    params: { name, arguments: args },
+  })
+  return (result?.content ?? [])
+    .filter(c => c.type === 'text')
+    .map(c => c.text)
+    .join('\n')
+}
+
+async function mcpListTools() {
+  await ensureMCPReady()
+  const result = await mcpPost({
+    jsonrpc: '2.0', id: _rpcId++, method: 'tools/list', params: {},
+  })
+  return result?.tools ?? []
+}
+
+// ─── Django API helper ────────────────────────────────────────────────────────
+
+async function djangoPost(path, data) {
+  const res = await fetch(`/api${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  const json = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(json.detail ?? json.error ?? `Django API returned ${res.status}. Is it running on :8000?`)
+  return json
+}
+
+// ─── Profile parser — extracts structured fields from natural language ─────────
+
+function parseProfileFromText(text) {
+  const t = text.toLowerCase()
+
+  const stateMap = {
+    karnataka: 'Karnataka', maharashtra: 'Maharashtra', 'tamil nadu': 'Tamil Nadu',
+    delhi: 'Delhi', kerala: 'Kerala', 'uttar pradesh': 'Uttar Pradesh',
+    'west bengal': 'West Bengal', gujarat: 'Gujarat', rajasthan: 'Rajasthan',
+    bihar: 'Bihar', telangana: 'Telangana', 'andhra pradesh': 'Andhra Pradesh',
+  }
+  const state = Object.keys(stateMap).find(k => t.includes(k))
+
+  const categoryMap = { obc: 'OBC', sc: 'SC', st: 'ST', ebc: 'EBC', general: 'General', gen: 'General' }
+  const category = Object.keys(categoryMap).find(k => new RegExp(`\\b${k}\\b`).test(t))
+
+  const incomeMatch = t.match(/(\d+(?:\.\d+)?)\s*(?:l\b|lakh|lac)/i) ??
+                      t.match(/income[^\d]*(\d{4,7})/i)
+  const annualIncome = incomeMatch
+    ? Math.round(parseFloat(incomeMatch[1]) * (/l\b|lakh|lac/i.test(incomeMatch[0]) ? 100000 : 1))
+    : 250000
+
+  const courseLevelMap = {
+    phd: 'PhD', pg: 'PG', 'post grad': 'PG', ug: 'UG',
+    'b.tech': 'UG', btech: 'UG', bsc: 'UG', ba: 'UG', '12th': '12th', '10th': '10th',
+  }
+  const courseLevel = Object.keys(courseLevelMap).find(k => t.includes(k))
+
+  const percentMatch = t.match(/(\d{2,3})\s*%/) ?? t.match(/cgpa[^\d]*(\d+(?:\.\d+)?)/i)
+  const percentage = percentMatch ? parseFloat(percentMatch[1]) : 75
+
+  const gender = t.includes('female') || t.includes('girl') || t.includes('woman') ? 'female'
+               : t.includes('male') || t.includes('boy') || t.includes('man') ? 'male'
+               : 'male'
+
+  const disability = t.includes('disab') || t.includes('pwd') || t.includes('handicap')
+
+  return {
+    name: 'Student',
+    state: stateMap[state] ?? 'Karnataka',
+    category: categoryMap[category] ?? 'General',
+    annualIncome,
+    courseLevel: courseLevelMap[courseLevel] ?? 'UG',
+    percentage,
+    gender,
+    disability,
+  }
+}
+
+// ─── Main agent router → real MCP + Django calls ──────────────────────────────
+
 async function callAgent(messages, signal) {
-  await new Promise(r => setTimeout(r, 1200 + Math.random() * 800))
-  if (signal.aborted) throw new DOMException('Aborted', 'AbortError')
+  const last = messages[messages.length - 1]?.content?.trim() ?? ''
+  const lower = last.toLowerCase()
+  const checkAbort = () => { if (signal.aborted) throw new DOMException('Aborted', 'AbortError') }
 
-  const last = messages[messages.length - 1]?.content?.toLowerCase() ?? ''
-
-  if (last.includes('scholarship') || last.includes('pm-yasasvi') || last.includes('nsp')) {
-    return `I found **3 scholarships** matching your profile:\n\n**1. PM-YASASVI (₹75,000/year)**\n- Eligibility: OBC/EBC/DNT students, family income < ₹2.5L\n- Portal: [scholarships.gov.in](https://scholarships.gov.in)\n- Deadline: 31 October 2025\n\n**2. NSP Central Sector Scheme (₹12,000/year)**\n- Eligibility: Class 12 merit, income < ₹8L\n- Portal: [NSP Portal](https://scholarships.gov.in)\n- Deadline: 31 October 2025\n\n**3. Karnataka Rajyotsava Scholarship**\n- Eligibility: Karnataka domicile, 60%+ marks\n- Portal: [karepass.cgg.gov.in](https://karepass.cgg.gov.in)\n- Deadline: 30 November 2025\n\nWould you like me to **check your eligibility** for any of these, or generate the **document checklist**?`
+  // help / start
+  if (lower === 'help' || lower === 'start' || lower === '') {
+    return [
+      "I'm **Anyverse** — your MCP-powered assistant for Indian students 🎓",
+      '',
+      '**MCP Agent Commands**',
+      '- `profile` — Open the student profile form (MCP App 1)',
+      '- `discover <details>` — Find matching schemes for a profile',
+      '- `check eligibility <schemeId> <details>` — Verify eligibility for a scheme',
+      '- `tools` — List all available MCP tools',
+      '',
+      '**Django API Commands**',
+      '- `recommend <email>` — Scored scholarships + schemes + internships',
+      '- `generate bundle <email>` — SOP, cover letter & document checklist',
+      '- `start workflow <email>` — Create a workflow session',
+      '',
+      'Or just describe your situation naturally:',
+      '*"I\'m from Karnataka, OBC, income ₹1.8L, 2nd year B.Tech"*',
+    ].join('\n')
   }
 
-  if (last.includes('eligib')) {
-    return `To check your eligibility, I need to build your student profile. Here's what I need:\n\n- **State of domicile**\n- **Category** (General / OBC / SC / ST / EBC)\n- **Annual family income**\n- **Current course & year**\n- **Institution type** (Govt / Private / Aided)\n\nYou can reply with these details in any format, like:\n*"I'm from Karnataka, OBC, income 1.8L, 2nd year B.Tech at a private college."*\n\nI'll instantly match you to eligible schemes.`
+  // list tools
+  if (lower === 'tools') {
+    checkAbort()
+    const tools = await mcpListTools()
+    if (!tools.length) return '❌ MCP server returned no tools. Make sure it is running:\n```\ncd mcp-server && npm run dev\n```'
+    return `## MCP Tools (${tools.length})\n\n` +
+      tools.map(t => `**\`${t.name}\`**\n> ${t.description}`).join('\n\n')
   }
 
-  if (last.includes('document') || last.includes('checklist')) {
-    return `Here's the **standard document bundle** for NSP scholarships:\n\n**Identity & Domicile**\n- Aadhaar card (mandatory)\n- Domicile certificate\n\n**Academic**\n- Class 10 & 12 marksheets\n- Current enrollment certificate (on college letterhead)\n- Fee receipt of current year\n\n**Income**\n- Income certificate from Tehsildar (not older than 1 year)\n- Bank passbook (first page)\n\n**Caste (if applicable)**\n- Caste certificate from competent authority\n\n**Bank Details**\n- IFSC code + account number (linked to Aadhaar)\n\n> 💡 Tip: All documents should be self-attested PDFs under 200KB for NSP portal upload.\n\nWant me to generate a **personalised checklist** based on specific schemes?`
+  // open profile form (MCP App 1)
+  if (lower === 'profile' || lower.includes('open profile') || lower.includes('student profile')) {
+    checkAbort()
+    const reply = await mcpCallTool('build_student_profile')
+    return `🪪 **Profile Form**\n\n${reply}\n\n> Open the interactive form in the MCP Inspector:\n> \`npx @modelcontextprotocol/inspector http://localhost:3000/mcp\``
   }
 
-  if (last.includes('internship')) {
-    return `Here are **active internships** for CSE students:\n\n**1. DRDO Summer Internship 2025**\n- Stipend: ₹10,000/month\n- Duration: 8 weeks (May–June)\n- Apply: [drdo.gov.in/internship](https://drdo.gov.in/internship)\n\n**2. ISRO Internship Programme**\n- Stipend: ₹8,000/month\n- Eligibility: 3rd/4th year B.Tech, 7.5+ CGPA\n- Deadline: 15 March 2025\n\n**3. Internshala Government Schemes**\n- Multiple openings across PSUs\n- Stipend: ₹5,000–₹15,000/month\n\nShall I filter by your CGPA, location preference, or stipend range?`
+  // discover schemes
+  if (lower.startsWith('discover')) {
+    checkAbort()
+    const profile = parseProfileFromText(last)
+    const raw = await mcpCallTool('fetch_opportunities', { profile })
+    checkAbort()
+    let parsed
+    try { parsed = JSON.parse(raw) } catch { return raw }
+    const schemes = parsed.schemes ?? []
+    if (!schemes.length) return 'No schemes found for that profile. Try a different state, category, or income range.'
+    return `## Found ${schemes.length} scheme${schemes.length !== 1 ? 's' : ''}\n\n` +
+      schemes.map(s => `**${s.name}** · ${s.type} · ${s.ministry}\n💰 ${s.amount}\n${s.description}`).join('\n\n---\n\n') +
+      `\n\nTo verify: \`check eligibility ${schemes[0].id}\``
   }
 
-  const hasAttachments = messages[messages.length - 1]?.attachments?.length > 0
-  if (hasAttachments) {
-    return `I've received your file(s). I can help you check if these documents meet the requirements for your scholarship application. Could you let me know which scheme you're applying for so I can verify the format and content?`
+  // check eligibility
+  if (lower.startsWith('check eligibility') || lower.startsWith('eligibility')) {
+    checkAbort()
+    const words = last.split(/\s+/)
+    const idx = words.findIndex(w => /eligib/i.test(w))
+    const schemeId = words[idx + 1] ?? 'NSP_CENTRAL'
+    const profile = parseProfileFromText(last)
+    const raw = await mcpCallTool('check_eligibility', { schemeId, profile })
+    checkAbort()
+    let result
+    try { result = JSON.parse(raw) } catch { return raw }
+    if (result.eligible) return `✅ **Eligible for \`${schemeId}\`**\n\n${result.reason}`
+    return `❌ **Not eligible for \`${schemeId}\`**\n\n**Reason:** ${result.reason}\n\n` +
+      (result.failedRules?.length > 1 ? `**All failed rules:**\n${result.failedRules.map(r => `- ${r}`).join('\n')}` : '')
   }
 
-  return `I'm Anyverse, your opportunity and document assistant for Indian students.\n\nI can help you:\n- 🎓 **Discover scholarships** (NSP, PM-YASASVI, state schemes, merit-based)\n- ✅ **Verify your eligibility** against 50+ portals using your profile\n- 📄 **Generate document checklists** ready for submission\n- 💼 **Find internships** from government and PSU portals\n\nTell me your course, state, and category — and I'll find opportunities tailored to you.`
+  // Django: recommend
+  if (lower.startsWith('recommend ')) {
+    const email = last.slice(10).trim()
+    if (!email) return '❌ Usage: `recommend student@example.com`'
+    checkAbort()
+    const data = await djangoPost('/recommend/', { email })
+    return [
+      `## Recommendations for ${data.student}`,
+      '',
+      `### 🎓 Scholarships (${data.matched_scholarships.length})`,
+      data.matched_scholarships.length
+        ? data.matched_scholarships.map(s => `- **${s.title}** — score: ${s.match_score}`).join('\n')
+        : '_None found_',
+      '',
+      `### 🏛 Government Schemes (${data.eligible_schemes.length})`,
+      data.eligible_schemes.length
+        ? data.eligible_schemes.map(s => `- ${s}`).join('\n')
+        : '_None found_',
+      '',
+      `### 💼 Internships (${data.recommended_internships.length})`,
+      data.recommended_internships.length
+        ? data.recommended_internships.map(i => `- **${i.title}** — score: ${i.match_score}`).join('\n')
+        : '_None found_',
+      '',
+      `### 📄 Document Analysis`,
+      data.document_analysis.length
+        ? data.document_analysis.map(d =>
+            `**${d.scheme}**: ${!d.missing_documents.length ? '✅ All docs present' : `Missing: ${d.missing_documents.join(', ')}`}`
+          ).join('\n')
+        : '_No analysis_',
+    ].join('\n')
+  }
+
+  // Django: generate bundle
+  if (lower.startsWith('generate bundle') || lower.startsWith('gen bundle')) {
+    const parts = last.split(/\s+/)
+    const email = parts[parts.length - 1]
+    if (!email.includes('@')) return '❌ Usage: `generate bundle student@example.com`'
+    checkAbort()
+    const data = await djangoPost('/generate-bundle/', { email })
+    return [
+      `## Document Bundle (ID: \`${data.bundle_id}\`)`,
+      '',
+      '### Statement of Purpose',
+      `> ${data.sop.trim()}`,
+      '',
+      '### Cover Letter',
+      `> ${data.cover_letter.trim()}`,
+      '',
+      '### Document Checklist',
+      data.checklist.split(',').map(d => `- [ ] ${d.trim()}`).join('\n'),
+    ].join('\n')
+  }
+
+  // Django: start workflow
+  if (lower.startsWith('start workflow') || (lower.startsWith('workflow') && last.includes('@'))) {
+    const email = last.split(/\s+/).find(w => w.includes('@'))
+    if (!email) return '❌ Usage: `start workflow student@example.com`'
+    checkAbort()
+    const data = await djangoPost('/workflow/start/', { email, workflow_type: 'full' })
+    return [
+      '## Workflow Session Started',
+      `- **Session ID:** \`${data.session_id}\``,
+      `- **Student:** ${data.student}`,
+      `- **Status:** \`${data.status}\``,
+      `- **Latest Bundle:** ${data.latest_bundle_id ? `\`${data.latest_bundle_id}\`` : '_none yet_'}`,
+    ].join('\n')
+  }
+
+  // attachment fallback
+  if (messages[messages.length - 1]?.attachments?.length > 0) {
+    return "I've received your file(s). Which scheme are you applying for? I'll check if these documents meet its requirements."
+  }
+
+  // natural language fallback → MCP discover
+  if (lower.includes('scholarship') || lower.includes('scheme') ||
+      lower.includes('internship') || lower.includes('document') || lower.includes('checklist')) {
+    checkAbort()
+    const profile = parseProfileFromText(last)
+    const raw = await mcpCallTool('fetch_opportunities', { profile })
+    checkAbort()
+    let parsed
+    try { parsed = JSON.parse(raw) } catch { return raw }
+    const schemes = parsed.schemes ?? []
+    if (!schemes.length) {
+      return "I couldn't find matching schemes for the details in your message. Try being specific:\n\n*\"I'm from Karnataka, OBC, income ₹1.8L, 2nd year B.Tech\"*\n\nOr use `recommend <email>` if your profile is already saved."
+    }
+    return `## ${schemes.length} scheme${schemes.length !== 1 ? 's' : ''} found\n\n` +
+      schemes.slice(0, 5).map(s =>
+        `**${s.name}** (${s.type})\n💰 ${s.amount} · ${s.ministry}\n${s.description}`
+      ).join('\n\n---\n\n') +
+      (schemes.length > 5 ? `\n\n_…and ${schemes.length - 5} more._` : '') +
+      `\n\nType \`check eligibility ${schemes[0]?.id}\` to verify your eligibility.`
+  }
+
+  // default
+  return [
+    "I'm **Anyverse** 🎓 — your opportunity and document assistant for Indian students.",
+    '',
+    'Try: *"Find scholarships for OBC students in Karnataka"*',
+    'Or: `help` for the full command list.',
+  ].join('\n')
 }
 
 const MAX_FILES = 5
